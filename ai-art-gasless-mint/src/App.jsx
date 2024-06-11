@@ -91,7 +91,32 @@ const App = () => {
   };
 
 
-
+const mintNft = async () => {
+  try {
+    const imageURL = await uploadArtToIpfs();
+  // mint as an NFT on nftport
+  const response = await axios.post(
+  `https://api.nftport.xyz/v0/mints/easy/urls`,
+  {
+    file_url: imageURL,
+    chain: "polygon",
+    name: "Sample NFT",
+    description: "Build with NFTPort!",
+    mint_to_address: "0x3d0b45Bc914457E027094E509eBE631E356cbB03",
+  },
+  {
+    headers: {
+      Authorization: import.meta.env.REACT_APP_NFT_PORT,
+      }
+    }
+  );
+  const data = await response.data;
+  setMinted(true)
+  console.log(data);
+  }catch(err) {
+  console.log(err);
+  }
+};
 console.log(name)
 console.log(description)
 console.log(address)
