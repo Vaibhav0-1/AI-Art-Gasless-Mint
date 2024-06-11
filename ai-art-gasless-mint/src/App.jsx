@@ -1,13 +1,18 @@
-import React from 'react'
 import { useState } from 'react'
 import axios from 'axios'
-import { NFTStorage } from "nft.storage";
 
 
 const App = () => {
   const [prompt , setPrompt] = useState("");
   const [imageBlob, setImageBlob] = useState("")
   const [file, setFile] = useState("")
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [address, setAddress] = useState("");
+  const [minted, setMinted] = useState(false);
 
   console.log(prompt);
 
@@ -41,6 +46,9 @@ const App = () => {
       setImageBlob(url)
     }catch(err){
       console.log(err);
+      setError(true)
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -68,6 +76,8 @@ const App = () => {
       });
       
       console.log(res.data);
+
+
       const ipfsCid = res.data.IpfsHash;
       console.log("IPFS CID:", ipfsCid);
 
@@ -82,6 +92,12 @@ const App = () => {
 
 
 
+console.log(name)
+console.log(description)
+console.log(address)
+
+
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-4">
       <h1 className="text-4xl font-extrabold">AI Art Gasless mints</h1>
@@ -93,22 +109,49 @@ const App = () => {
             type="text"
             placeholder="Enter a prompt"
           />
-      <button onClick={generateArt} className="bg-black text-white rounded-md p-2">Next</button>
+      <button onClick={generateArt} className="bg-black text-white rounded-md p-2">Next
+      </button>
+      {loading && <p>Loading...</p>}
     </div>
-    {/* conditional rendering */}
-      {
-        imageBlob && <img src={imageBlob} alt="AI generated art" />
-      }
-      {
+        {imageBlob && (
+          <div className="flex flex-col gap-4 items-center justify-center">
+          <img src={imageBlob} alt="AI generated art" />
+        {
+              minted ? <p>Minted this NFT</p> : (
+                <div className="flex flex-col items-center justify-center gap-4">
+        {/* input for name */}
+        <input
+          className="border-2 border-black rounded-md p-2"
+          onChange={(e) => setName(e.target.value)}
+          type="text"
+          placeholder="Enter a name"
+        />
+        {/* input for description */}
+        <input
+          className="border-2 border-black rounded-md p-2"
+          onChange={(e) => setDescription(e.target.value)}
+          type="text"
+          placeholder="Enter a description"
+        />
+        {/* input for address */}
+        <input
+          className="border-2 border-black rounded-md p-2"
+          onChange={(e) => setAddress(e.target.value)}
+          type="text"
+          placeholder="Enter a address"
+        />
          <button 
-         onClick={uploadArtToIpfs}
+         onClick={mintNft}
           className="bg-black text-white rounded-md p-2">
-            Upload to IPFS
+            Mint
             </button>
-      }
+    </div>
+              )
+            }
+    </div>
+  )}
     </div>
   </div>
-);
+  );
 }
-
 export default App
